@@ -1,0 +1,28 @@
+{
+  "name": "auto-sust-yiban-infoupload",
+  "version": "0.0.0",
+  "description": "Auto upload your information to sust yiban.",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.21.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShirasawaSama/auto-sust-yiban-infoupload.git"
+  },
+  "keywords": [
+    "yiban",
+    "sust",
+    "auto"
+  ],
+  "author": "Shirasawa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ShirasawaSama/auto-sust-yiban-infoupload/issues"
+  },
+  "homepage": "https://github.com/ShirasawaSama/auto-sust-yiban-infoupload#readme"
+}
