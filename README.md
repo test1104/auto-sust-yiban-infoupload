@@ -43,6 +43,8 @@ Edit `config.json`:
 }
 ```
 
+Then restart the application.
+
 ## Author
 
 Shirasawa
