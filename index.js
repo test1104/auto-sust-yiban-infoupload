@@ -116,9 +116,9 @@ const getBody = (req, cb) => {
   })
 }
 
-const getToken = (mobile, passwd) => axios.get('https://mobile.yiban.cn/api/v3/passport/login', {
+const getToken = (mobile, password) => axios.get('https://mobile.yiban.cn/api/v3/passport/login', {
   timeout: 10000,
-  params: { mobile, passwd, imei: getIMEI() },
+  params: { mobile, password, imei: getIMEI(), ct: 1, identify: 0 },
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
     'User-Agent': UA,
@@ -170,9 +170,9 @@ const upload = (id, name, token) => {
           const account = config[name]
           if (typeof account === 'object') {
             return getToken(account.username, account.password).then(it => {
-              if (it.data.response !== '100' || !it.data.data.access_token) throw new Error('登录-' + it.data.message)
-              if (it.data.data.user.name !== name) throw new Error('当前程序仅限白名单用户使用!')
-              const t = config[name].token = it.data.data.access_token
+              if (it.data.response !== 100 || !it.data.data.user.access_token) throw new Error('登录-' + it.data.message)
+              if (it.data.data.user.nick !== name) throw new Error('当前程序仅限白名单用户使用!')
+              const t = config[name].token = it.data.data.user.access_token
               return save().then(() => upload(id, name, t))
             })
           } else throw new Error('登录已过期!')
@@ -284,11 +284,11 @@ http.createServer(function (req, res) {
           return
         }
         getToken(data.username, data.password).then(it => {
-          if (it.data.response !== '100' || !it.data.data.access_token) {
+          if (it.data.response !== 100 || !it.data.data.access_token) {
             res.end('易班接口返回错误!')
             return
           }
-          const name = it.data.data.user.name
+          const name = it.data.data.user.nick
           if (!(name in config)) {
             res.end('当前程序仅限白名单用户使用!')
             return
@@ -296,7 +296,7 @@ http.createServer(function (req, res) {
           config[name] = {
             username: data.username,
             password: data.password,
-            token: it.data.data.access_token
+            token: it.data.data.user.access_token
           }
           save()
           res.end('保存成功!')
