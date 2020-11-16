@@ -1,6 +1,8 @@
 const fs = require('fs')
 const http = require('http')
 const axios = require('axios').default
+const createRandom = require('random-seed').create
+const mod10 = require('checkdigit').mod10
 
 if (!fs.existsSync('config.json')) fs.writeFileSync('config.json', '{}')
 
@@ -9,6 +11,12 @@ let config = JSON.parse(fs.readFileSync('config.json').toString())
 let lastTry = ''
 let status = {}
 const getName = it => it.slice(0, 1) + '*'.repeat(it.length - 1)
+
+const getIMEI = email => {
+  const rand = createRandom(email)
+  const str = '86' + rand.range(999999).toString().padStart(6, 0) + rand.range(999999).toString().padStart(6, 0)
+  return str + mod10.create(str)
+}
 
 const padStart = str => str.toString().padStart(2, '0')
 const getStatusPage = () => `<!DOCTYPE html>
@@ -108,8 +116,9 @@ const getBody = (req, cb) => {
   })
 }
 
-const getToken = (username, password) => axios.get(`https://mobile.yiban.cn/api/v2/passport/login?v=4.7.4&ct=1&identify=0&account=${username}&passwd=${password}`, {
+const getToken = (mobile, passwd) => axios.get('https://mobile.yiban.cn/api/v3/passport/login', {
   timeout: 10000,
+  params: { mobile, passwd, imei: getIMEI() },
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
     'User-Agent': UA,
@@ -125,8 +134,9 @@ const UA = 'Mozilla/5.0 (Linux; Android 10; wv) AppleWebKit/537.36 (KHTML, like 
 const upload = (id, name, token) => {
   const hName = getName(name)
   if (status[hName] === '打卡成功!') return Promise.resolve()
-  return axios.get('http://f.yiban.cn/iapp610661?access_token=' + token, {
+  return axios.get('http://f.yiban.cn/iapp610661', {
     timeout: 10000,
+    params: { access_token: token },
     headers: {
       Origin: 'https://f.yiban.cn',
       'User-Agent': UA
@@ -135,12 +145,13 @@ const upload = (id, name, token) => {
     .then(it => {
       if (it.status !== 200) throw new Error(it.statusText)
       const cookies = it.headers['set-cookie']
-      return axios.post(`http://yiban.sust.edu.cn/v4/public/index.php/Index/formflow/add.html?desgin_id=${id}&list_id=12`,
+      return axios.post(`http://yiban.sust.edu.cn/v4/public/index.php/Index/formflow/add.html`,
         id === '24'
           ? '24%5B0%5D%5B0%5D%5Bname%5D=form%5B24%5D%5Bfield_1588749561_2922%5D%5B%5D&24%5B0%5D%5B0%5D%5Bvalue%5D=36.3&24%5B0%5D%5B1%5D%5Bname%5D=form%5B24%5D%5Bfield_1588749738_1026%5D%5B%5D&24%5B0%5D%5B1%5D%5Bvalue%5D=%E9%99%95%E8%A5%BF%E7%9C%81+%E8%A5%BF%E5%AE%89%E5%B8%82+%E6%9C%AA%E5%A4%AE%E5%8C%BA+111%E5%8E%BF%E9%81%93+2%E5%8F%B7+%E9%9D%A0%E8%BF%91%E5%8C%97%E5%9F%8E%E9%A9%BE%E6%A0%A1+&24%5B0%5D%5B2%5D%5Bname%5D=form%5B24%5D%5Bfield_1588749759_6865%5D%5B%5D&24%5B0%5D%5B2%5D%5Bvalue%5D=%E6%98%AF&24%5B0%5D%5B3%5D%5Bname%5D=form%5B24%5D%5Bfield_1588749842_2715%5D%5B%5D&24%5B0%5D%5B3%5D%5Bvalue%5D=%E5%90%A6&24%5B0%5D%5B4%5D%5Bname%5D=form%5B24%5D%5Bfield_1588749886_2103%5D%5B%5D&24%5B0%5D%5B4%5D%5Bvalue%5D='
           : '25%5B0%5D%5B0%5D%5Bname%5D=form%5B25%5D%5Bfield_1588750276_2934%5D%5B%5D&25%5B0%5D%5B0%5D%5Bvalue%5D=36.4&25%5B0%5D%5B1%5D%5Bname%5D=form%5B25%5D%5Bfield_1588750304_5363%5D%5B%5D&25%5B0%5D%5B1%5D%5Bvalue%5D=%E9%99%95%E8%A5%BF%E7%9C%81+%E8%A5%BF%E5%AE%89%E5%B8%82+%E6%9C%AA%E5%A4%AE%E5%8C%BA+111%E5%8E%BF%E9%81%93+2%E5%8F%B7+%E9%9D%A0%E8%BF%91%E5%8C%97%E5%9F%8E%E9%A9%BE%E6%A0%A1+&25%5B0%5D%5B2%5D%5Bname%5D=form%5B25%5D%5Bfield_1588750323_2500%5D%5B%5D&25%5B0%5D%5B2%5D%5Bvalue%5D=%E6%98%AF&25%5B0%5D%5B3%5D%5Bname%5D=form%5B25%5D%5Bfield_1588750343_3510%5D%5B%5D&25%5B0%5D%5B3%5D%5Bvalue%5D=%E5%90%A6&25%5B0%5D%5B4%5D%5Bname%5D=form%5B25%5D%5Bfield_1588750363_5268%5D%5B%5D&25%5B0%5D%5B4%5D%5Bvalue%5D=',
         {
           timeout: 10000,
+          params: { desgin_id: id, list_id: '12' }
           headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'User-Agent': UA,
