@@ -151,7 +151,7 @@ const upload = (id, name, token) => {
           : '25%5B0%5D%5B0%5D%5Bname%5D=form%5B25%5D%5Bfield_1588750276_2934%5D%5B%5D&25%5B0%5D%5B0%5D%5Bvalue%5D=36.4&25%5B0%5D%5B1%5D%5Bname%5D=form%5B25%5D%5Bfield_1588750304_5363%5D%5B%5D&25%5B0%5D%5B1%5D%5Bvalue%5D=%E9%99%95%E8%A5%BF%E7%9C%81+%E8%A5%BF%E5%AE%89%E5%B8%82+%E6%9C%AA%E5%A4%AE%E5%8C%BA+111%E5%8E%BF%E9%81%93+2%E5%8F%B7+%E9%9D%A0%E8%BF%91%E5%8C%97%E5%9F%8E%E9%A9%BE%E6%A0%A1+&25%5B0%5D%5B2%5D%5Bname%5D=form%5B25%5D%5Bfield_1588750323_2500%5D%5B%5D&25%5B0%5D%5B2%5D%5Bvalue%5D=%E6%98%AF&25%5B0%5D%5B3%5D%5Bname%5D=form%5B25%5D%5Bfield_1588750343_3510%5D%5B%5D&25%5B0%5D%5B3%5D%5Bvalue%5D=%E5%90%A6&25%5B0%5D%5B4%5D%5Bname%5D=form%5B25%5D%5Bfield_1588750363_5268%5D%5B%5D&25%5B0%5D%5B4%5D%5Bvalue%5D=',
         {
           timeout: 10000,
-          params: { desgin_id: id, list_id: '12' },s
+          params: { desgin_id: id, list_id: '12' },
           headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'User-Agent': UA,
