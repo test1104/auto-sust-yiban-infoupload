@@ -189,6 +189,7 @@ const upload = (id, name, token) => {
       if (it.data.msg === 'SU') {
         console.log(name + ':', '打卡成功!')
         status[hName] = '打卡成功!'
+        return
       }
       throw new Error(it.data.msg)
     })
