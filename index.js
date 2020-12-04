@@ -118,7 +118,7 @@ const getBody = (req, cb) => {
 
 const getToken = (mobile, password) => axios.get('https://mobile.yiban.cn/api/v3/passport/login', {
   timeout: 10000,
-  params: { mobile, password, imei: getIMEI(), ct: 1, identify: 0 },
+  params: { mobile, password, imei: getIMEI(mobile), ct: 1, identify: 0 },
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
     'User-Agent': UA,
@@ -285,7 +285,7 @@ http.createServer(function (req, res) {
           return
         }
         getToken(data.username, data.password).then(it => {
-          if (it.data.response !== 100 || !it.data.data.access_token) {
+          if (it.data.response !== 100 || !it.data.data.user.access_token) {
             res.end('易班接口返回错误!')
             return
           }
