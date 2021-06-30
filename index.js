@@ -1,4 +1,4 @@
-const fs = require('fs')
+﻿const fs = require('fs')
 const http = require('http')
 const axios = require('axios').default
 const createRandom = require('random-seed').create
@@ -120,7 +120,6 @@ const getToken = (mobile, password) => axios.get('https://mobile.yiban.cn/api/v3
   timeout: 10000,
   params: { mobile, password, imei: getIMEI(mobile), ct: 1, identify: 0 },
   headers: {
-    'X-Requested-With': 'XMLHttpRequest',
     'User-Agent': UA,
     Origin: 'http://mobile.yiban.cn',
     Referer: 'http://mobile.yiban.cn'
@@ -129,19 +128,30 @@ const getToken = (mobile, password) => axios.get('https://mobile.yiban.cn/api/v3
 
 const save = () => fs.promises.writeFile('config.json', JSON.stringify(config, null, 2))
 
-const UA = 'Mozilla/5.0 (Linux; Android 10; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/85.0.4183.127 Mobile Safari/537.36 yiban_android'
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36'
 
 const upload = (id, name, token) => {
   const hName = getName(name)
   if (status[hName] === '打卡成功!') return Promise.resolve()
-  return axios.get('http://f.yiban.cn/iapp610661', {
+  return axios.get('https://www.yiban.cn/login/accessTokenLogin', {
     timeout: 10000,
     params: { access_token: token },
     headers: {
-      Origin: 'https://f.yiban.cn',
+      Origin: 'https://www.yiban.cn',
       'User-Agent': UA
     }
   })
+    .then(it => {
+      const cookies = it.headers['set-cookie']
+      return axios.get('http://f.yiban.cn/iapp610661', {
+        timeout: 10000,
+        headers: {
+          Origin: 'http://f.yiban.cn',
+          'User-Agent': UA,
+          Cookie: (Array.isArray(cookies) ? cookies : [cookies]).filter(c => !c.includes('waf_cookie=')).map(c => c.split(';')[0]).join('; ')
+        }
+      })
+    })
     .then(it => {
       if (it.status !== 200) throw new Error(it.statusText)
       const cookies = it.headers['set-cookie']
@@ -198,13 +208,17 @@ const upload = (id, name, token) => {
       status[hName] = `打卡失败! (${e.message})`
     })
 }
-const f = id => {
-  Object.entries(config).forEach(([name, token]) => upload(id, name, typeof token === 'object' ? token.token : token))
+const f = async id => {
+  for (const name in config) {
+    const token = config[name]
+    await upload(id, name, typeof token === 'object' ? token.token : token)
+    await new Promise(r => setTimeout(r, 1000))
+  }
   const t = new Date()
   lastTry = `${t.getFullYear()}-${padStart(t.getMonth() + 1)}-${padStart(t.getDay() + 1)} ${padStart(t.getHours())}:${padStart(t.getMinutes())}:${padStart(t.getSeconds())}`
 }
 
-f(new Date().getHours() > 12 ? '25' : '24')
+if (process.argv.some(it => it === '-f' || it === '--force')) f(new Date().getHours() > 12 ? '25' : '24')
 setInterval(() => {
   switch (new Date().getHours()) {
     case 5:
@@ -212,9 +226,13 @@ setInterval(() => {
       status = {}
       break
     case 6:
+    case 7:
+    case 8:
       f('24')
       break
     case 12:
+    case 13:
+    case 14:
       f('25')
   }
 }, 15 * 60 * 1000)
