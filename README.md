@@ -25,7 +25,7 @@ Or using `pm2`:
 ```bash
 npm install -g pm2
 
-pm2 run index.js
+pm2 run main.js
 ```
 
 Or run as a docker image:

@@ -10,6 +10,7 @@ let config = JSON.parse(fs.readFileSync('config.json').toString())
 
 let lastTry = ''
 let status = {}
+let status2 = {}
 const getName = it => it.slice(0, 1) + '*'.repeat(it.length - 1)
 
 const getIMEI = email => {
@@ -132,7 +133,7 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 
 const upload = (id, name, token) => {
   const hName = getName(name)
-  if (status[hName] === '打卡成功!') return Promise.resolve()
+  if (status2[name]) return Promise.resolve()
   return axios.get('https://www.yiban.cn/login/accessTokenLogin', {
     timeout: 10000,
     params: { access_token: token },
@@ -194,11 +195,13 @@ const upload = (id, name, token) => {
       }
       if (it.data.msg.includes('多次提交')) {
         status[hName] = '打卡成功!'
+        status2[name] = true
         return
       }
       if (it.data.msg === 'SU') {
         console.log(name + ':', '打卡成功!')
         status[hName] = '打卡成功!'
+        status2[name] = true
         return
       }
       throw new Error(it.data.msg)
@@ -206,6 +209,7 @@ const upload = (id, name, token) => {
     .catch(e => {
       console.error(name + ':', e)
       status[hName] = `打卡失败! (${e.message})`
+      status2[name] = false
     })
 }
 const f = async id => {
@@ -224,6 +228,7 @@ setInterval(() => {
     case 5:
     case 11:
       status = {}
+      status2 = {}
       break
     case 6:
     case 7:
