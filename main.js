@@ -248,10 +248,6 @@ http.createServer(function (req, res) {
     case '/checkin':
       if (req.method !== 'POST') break
       const hour = new Date().getHours()
-      if (!((hour >= 6 && hour <= 8) || (hour >= 12 && hour <= 15))) {
-        res.end('错误的时间遇上了错误的卡!')
-        return
-      }
       getBody(req, (err, data) => {
         if (err) {
           console.error(err)
