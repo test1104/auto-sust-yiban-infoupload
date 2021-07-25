@@ -28,9 +28,21 @@ npm install -g pm2
 pm2 run index.js
 ```
 
+Or run as a docker image:
+
+```bash
+git clone https://github.com/ShirasawaSama/auto-sust-yiban-infoupload.git
+
+cd auto-sust-yiban-infoupload
+
+docker build -t yiban .
+
+docker run -d yiban
+```
+
 ## Status
 
-open `http://127.0.0.1:2333/status`
+open `http://127.0.0.1:47357/status`
 
 ## Whitelist
 
