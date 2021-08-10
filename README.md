@@ -2,7 +2,7 @@
 
 ## Requirement
 
-- [Node.js](https://nodejs.org/) > 12.0.0
+- [Node.js](https://nodejs.org/) >= 16.0.0
 
 ## Usage
 
@@ -11,16 +11,44 @@ git clone https://github.com/ShirasawaSama/auto-sust-yiban-infoupload.git
 
 cd auto-sust-yiban-infoupload
 
-npm install
+npm install --production
 ```
 
-## Run
+### Build
+
+```bash
+npm build
+```
+
+### Cli
+
+```bash
+node dist/cli <mobile> <password> --kind=[morning/noon/vacation] --location=[location] --temperature=[temperature]
+```
+
+#### Example
+
+```bash
+node dist/cli 123456789010 iLoveYou -k noon
+
+node dist/cli 123456789010 iLoveYou -t 36.4
+```
+
+### Server
+
+#### Run
+
+```bash
+echo 你的腾讯位置服务Key>lbs_key
+```
+
+##### Simple
 
 ```bash
 npm start
 ```
 
-Or using `pm2`:
+##### pm2
 
 ```bash
 npm install -g pm2
@@ -28,34 +56,49 @@ npm install -g pm2
 pm2 run main.js
 ```
 
-Or run as a docker image:
+##### Docker
 
 ```bash
-git clone https://github.com/ShirasawaSama/auto-sust-yiban-infoupload.git
+docker build -t auto-sust-yiban-infoupload .
 
-cd auto-sust-yiban-infoupload
-
-docker build -t yiban .
-
-docker run -d yiban
+docker run -d auto-sust-yiban-infoupload
 ```
 
-## Status
+#### Status
 
-open `http://127.0.0.1:47357/status`
+Just open `http://127.0.0.1:47357/`
 
-## Whitelist
+#### Whitelist
 
 Edit `config.json`:
 
 ```json
 {
-  "名字1": "",
-  "名字2": ""
+  "phone number1": {
+    "password": "your password",
+    "location": "your location"
+  }
+}
+```
+
+##### Example
+
+```json
+{
+  "12345678910": { "password": "iLoveYou" },
+  "12345678911": { "password": "iHateYou" }
 }
 ```
 
 Then restart the application.
+
+### Github Actions
+
+1. Fork this repository
+2. Add these following secrets:
+  - **YIBAN_MOBILE**: Your phone number
+  - **YIBAN_PASSWORD**: Your password
+  - **YIBAN_LOCATION**: Your location _(Optional)_
 
 ## Author
 

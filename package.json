@@ -2,15 +2,27 @@
   "name": "auto-sust-yiban-infoupload",
   "version": "0.0.0",
   "description": "Auto upload your information to sust yiban.",
-  "main": "main.js",
+  "main": "server.js",
   "dependencies": {
+    "@types/ejs": "^3.0.7",
+    "@types/node": "^16.4.13",
+    "@types/node-rsa": "^1.1.1",
+    "@types/random-seed": "^0.3.3",
+    "@types/yargs": "^17.0.2",
     "axios": "^0.21.1",
     "checkdigit": "^1.1.1",
-    "random-seed": "^0.3.0"
+    "ejs": "^3.1.6",
+    "node-rsa": "^1.1.1",
+    "random-seed": "^0.3.0",
+    "typescript": "^4.3.5",
+    "yargs": "^17.1.0"
   },
-  "devDependencies": {},
   "scripts": {
-    "start": "node main.js"
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "bin": {
+    "sust-yiban-upload": "dist/cli.js"
   },
   "repository": {
     "type": "git",
@@ -26,5 +38,14 @@
   "bugs": {
     "url": "https://github.com/ShirasawaSama/auto-sust-yiban-infoupload/issues"
   },
-  "homepage": "https://github.com/ShirasawaSama/auto-sust-yiban-infoupload#readme"
+  "homepage": "https://github.com/ShirasawaSama/auto-sust-yiban-infoupload#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.1",
+    "eslint": "^7.32.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.0"
+  }
 }

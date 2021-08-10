@@ -1,3 +1,4 @@
 node_modules
 config.json
-*.html
+lbs_key
+dist

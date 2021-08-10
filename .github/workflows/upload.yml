@@ -1,0 +1,37 @@
+name: 'Upload infomation to Yiban'
+
+on:
+  schedule:
+    - cron: '0 23 * * *'
+    - cron: '0 4 * * *'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+    
+      - name: Check out git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm install --production
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload infomation
+        run: '[[ `date +%H` = 23 ]] && kind=morning || kind=noon; node dist/cli.js ${{ secrets.YIBAN_MOBILE }} "${{ secrets.YIBAN_PASSWORD }}" -l="${{ secrets.YIBAN_LOCATION }}" -k=$kind'
