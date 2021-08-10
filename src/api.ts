@@ -90,7 +90,7 @@ export const upload = (designId: string, listId: string, cookies: string, data: 
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       Origin: 'http://yiban.sust.edu.cn',
-      Referer: `http://yiban.sust.edu.cn/v4/public/index.php/index/formflow/form.html?desgin_id=${designId}&list_id=${designId}`,
+      Referer: `http://yiban.sust.edu.cn/v4/public/index.php/index/formflow/form.html?desgin_id=${designId}&list_id=${listId}`,
       Cookie: cookies
     }
   }
